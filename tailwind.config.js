@@ -2,19 +2,25 @@
 module.exports = {
   content: ["./src/**/*.{html,js}"],
   theme: {
-    colors: {
-      'purple': "#673AB7",
-      "yellow": "#FDBF49",
-      "red": "#FF3A3A",
-      "blue": "#5498FF",
-      "green": "#2CCE59",
-      "gray": "#EDE7E7",
-      "hot-pink": "#ED266B",
-      "utility-blue": "#236AF2"
-
+    extend: {
+      colors: {
+        purple: "#673AB7",
+        yellow: "#FDBF49",
+        red: "#FF3A3A",
+        blue: "#5498FF",
+        green: "#00C520",
+        lime: "#2CCE59", 
+        gray: "#EDE7E7",
+        gray: {
+          100: "#EDE7E7",
+          200: "#C8C8C8",
+          300: "#8F8F8F",
+          400: "#9A9A9A",
+        },
+        "hot-pink": "#ED266B",
+        "utility-blue": "#236AF2",
+      },
     },
-    extend: {},
   },
   plugins: [],
-}
-
+};

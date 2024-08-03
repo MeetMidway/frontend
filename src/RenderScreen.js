@@ -6,7 +6,7 @@ import HomeView from "./Screen/HomeView";
 
 
 function RenderScreen()  {
-    const auth = true;
+    const auth = false;
     return (auth ? <AuthView /> : <HomeView />)
 }
 
