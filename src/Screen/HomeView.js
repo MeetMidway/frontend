@@ -29,7 +29,7 @@ const center = { lat: 40.7663, lng: -73.81423 };
 function Map() {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyBdKyA2xeRRyMIb-Aj7WkY7VH7RlsVt6to", //remove api key
+    googleMapsApiKey: "add key", //remove api key
   });
 
   const strokeColors = ["#FF0000", "#FDBF49", "#2985FF", "#2CCE59"];
