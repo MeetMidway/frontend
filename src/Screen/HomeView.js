@@ -9,7 +9,7 @@ import BluePinIcon from "../assets/icons/PinIcons/BluePinIcon.svg";
 import RedPinIcon from "../assets/icons/PinIcons/RedPinIcon.svg";
 import GreenPinIcon from "../assets/icons/PinIcons/GreenPinicon.svg";
 import YellowPinIcon from "../assets/icons/PinIcons/YellowPinIcon.svg";
-import MidpointIcon from "../assets/icons/MidpointIcon.svg";
+import MidpointIcon from "../assets/icons/PinIcons/MidpointIcon.svg";
 
 const containerStyle = {
   width: "100vw",
