@@ -33,23 +33,28 @@ function Map() {
   });
 
   const strokeColors = ["#FF0000", "#FDBF49", "#2985FF", "#2CCE59"];
-  
-  
+
   //state variables
   const [map, setMap] = useState(null);
   const [directionsResults, setDirectionsResults] = useState([]);
-  
 
+ 
   const onLoad = useCallback(function callback(map) {
     // bounds for all ze markers
     const bounds = new window.google.maps.LatLngBounds();
-    friendsAddresses.forEach((address) =>
-      bounds.extend(new window.google.maps.LatLng(address.lat, address.lng))
-    );
+    friendsAddresses.map((address) => {
+      bounds.extend({
+        lat: address.lat,
+        lng: address.lng,
+      });
+    });
     bounds.extend(new window.google.maps.LatLng(center.lat, center.lng));
     map.fitBounds(bounds);
     setMap(map);
   }, []);
+
+
+
 
   const onUnmount = useCallback(function callback(map) {
     setMap(null);
@@ -103,12 +108,11 @@ function Map() {
 
   //const endpoint = directionsResults[0]?.routes[0].overview_path.length;
 
-  
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={center}
-      zoom={14}
+      zoom={10}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
@@ -124,11 +128,7 @@ function Map() {
           }
         />
       ))}
-      <MarkerF
-        position={center}
-        key={"center"}
-        icon={MidpointIcon}
-      />
+      <MarkerF position={center} key={"center"} icon={MidpointIcon} />
 
       {directionsResults.map((result, index) => (
         <DirectionsRenderer
