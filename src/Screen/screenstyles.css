@@ -38,7 +38,7 @@
 @keyframes moveOutTop {
     to {
       transform: translateY(-100vh);
-      opacity: 0;
+      visibility: hidden;
     }
   }
   
@@ -63,6 +63,19 @@
     }
   }
 
+
+
+@keyframes moveInTop {
+  from {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
   .move-out-top {
     animation: moveOutTop 3s forwards;
   }
@@ -77,4 +90,9 @@
   
   .move-out-left {
     animation: moveOutLeft 3s forwards;
+  }
+
+  .move-in-top {
+    animation: moveInTop 2s forwards;
+
   }
