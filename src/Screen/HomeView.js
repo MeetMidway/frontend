@@ -9,6 +9,8 @@ import YellowSwig from "../assets/images/location-swiggles/YellowSwig.js";
 import ArrivedIcon from "../assets/icons/ArrivedIcon.js";
 import BackIcon from "../assets/icons/BackIcon.js";
 import CopyIcon from "../assets/icons/CopyIcon.js";
+import { Modal } from "./utility_components.js";
+import AccountIcon from "../assets/icons/AccountIcon.js";
 
 export default function HomeView() {
   const [steps, setSteps] = useState([
@@ -25,6 +27,8 @@ export default function HomeView() {
   const [inputValue, setInputValue] = useState("");
 
   const [showYellowSwig, setShowYellowSwig] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(true);
 
   useEffect(() => {
     if (stage === 1) {
@@ -78,8 +82,29 @@ export default function HomeView() {
     }
   };
 
+  const ModalButton = ({ type, text }) => {
+    return (
+      <div
+        className={`${
+          (type === "link" && "bg-purple") || "bg-white"
+        } rounded-lg border border-gray-200 flex justify-between items-center px-6  py-3 gap-x-6`}
+      >
+        <h3
+          className={`${
+            (type === "link" && "text-white font-semibold") || "text-black"
+          } `}
+        >
+          {text}
+        </h3>
+        {(type === "link" && <CopyIcon width={25} />) || (
+          <AccountIcon color={"black"} width={25} />
+        )}
+      </div>
+    );
+  };
+
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col relative">
       <div className="bg-white h-40 w-full relative pb-3">
         <div className="mt-6" style={{ position: "relative", zIndex: 30 }}>
           <MidwayNav steps={steps} numSteps={showSteps} stage={stage} />
@@ -120,21 +145,12 @@ export default function HomeView() {
           ))}
         </div>
         {stage === 1 && (
-          <div className="w-full flex justify-between px-20">
-            <div
-              className=" flex "
-              onClick={() => setNumFriends(numFriends + 1)}
-            >
-              <div className="bg-lime rounded-full text-white px-2">
-                <h3>+ add friend</h3>
-              </div>
-            </div>
-
-            <div className="flex" onClick={() => setNumFriends(numFriends + 1)}>
-              <div className="bg-yellow flex flex-row rounded-full text-white px-2 justify-center items-center">
-                <CopyIcon />
-                <h3>party link</h3>
-              </div>
+          <div
+            className=" flex px-20"
+            onClick={() => setNumFriends(numFriends + 1)}
+          >
+            <div className="bg-lime rounded-full text-white px-2">
+              <h3>+ add friend</h3>
             </div>
           </div>
         )}
@@ -159,6 +175,19 @@ export default function HomeView() {
           exitButton={() => setStage(1)}
           icon_active={inputValue}
         />
+      </div>
+      <div className="relative items-center">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Modal Title"
+          className="w-full"
+        >
+          <div>
+            <ModalButton type={"link"} text={"copy party link"} />
+            <ModalButton type={"account"} text={"edit profile"} />
+          </div>
+        </Modal>
       </div>
     </div>
   );
