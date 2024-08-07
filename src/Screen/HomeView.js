@@ -133,7 +133,7 @@ export default function HomeView() {
         style={{ zIndex: 20 }}
       >
         <div className="overflow-y-auto w-full h-[9.5rem] relative">
-          <AddressInput type={"self"} onChange={handleChange} />
+          <AddressInput type={"self"} onChange={handleChange} manageButton={() => setIsModalOpen(true)} />
           {[...Array(numFriends)].map((_, index) => (
             <AddressInput
               color={pinColors[index]}
@@ -183,7 +183,7 @@ export default function HomeView() {
           title="Modal Title"
           className="w-full"
         >
-          <div>
+          <div className="flex flex-col gap-y-2 px-5 pb-5">
             <ModalButton type={"link"} text={"copy party link"} />
             <ModalButton type={"account"} text={"edit profile"} />
           </div>
