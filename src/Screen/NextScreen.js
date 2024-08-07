@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Typography, Container, Box } from '@mui/material';
-import { fireStore, auth } from '../Firebase'; // Ensure correct path
+import { db, auth } from '../Firebase'; // Ensure correct path
 import { addDoc, collection, getDocs } from "firebase/firestore";
 
 /**
@@ -18,7 +18,7 @@ const AddPreferencesScreen = () => {
         const fetchPreferences = async () => {
             console.log("fetching")
             try {
-                const querySnapshot = await getDocs(collection(fireStore, "preferences"));
+                const querySnapshot = await getDocs(collection(db, "preferences"));
                 const prefsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setPreferences(prefsData);
             } catch (err) {
@@ -33,10 +33,10 @@ const AddPreferencesScreen = () => {
     const addPreference = async () => {
         if (preference.trim() && user) {
             try {
-                await addDoc(collection(fireStore, "preferences"), { text: preference, creator: user.email });
+                await addDoc(collection(db, "preferences"), { text: preference, creator: user.email });
                 setPreference('');
                 // Refresh preferences list
-                const querySnapshot = await getDocs(collection(fireStore, "preferences"));
+                const querySnapshot = await getDocs(collection(db, "preferences"));
                 const prefsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setPreferences(prefsData);
             } catch (err) {

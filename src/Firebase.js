@@ -9,7 +9,7 @@ import { getFirestore } from "firebase/firestore";
 
 // Web app's Firebase configuration 
 const firebaseConfig = {
-    apiKey: "",
+    apiKey: "AIzaSyBiMM-ZrnqBIfVaEYg3gbq3IbI3xLDLIRk",
     authDomain: "meetmidway-11c52.firebaseapp.com",
     projectId: "meetmidway-11c52",
     storageBucket: "meetmidway-11c52.appspot.com",
@@ -20,6 +20,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const fireStore = getFirestore(app);
+const db = getFirestore(app);
 
-export { fireStore, auth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup };
+export { db, auth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup };

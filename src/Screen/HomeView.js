@@ -7,7 +7,7 @@ import {
 } from "@react-google-maps/api";
 import BluePinIcon from "../assets/icons/PinIcons/BluePinIcon.svg";
 import RedPinIcon from "../assets/icons/PinIcons/RedPinIcon.svg";
-import GreenPinIcon from "../assets/icons/PinIcons/GreenPinicon.svg";
+import GreenPinIcon from "../assets/icons/PinIcons/GreenPinIcon.svg";
 import YellowPinIcon from "../assets/icons/PinIcons/YellowPinIcon.svg";
 import MidpointIcon from "../assets/icons/PinIcons/MidpointIcon.svg";
 
