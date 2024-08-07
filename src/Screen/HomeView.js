@@ -8,6 +8,7 @@ import "./screenstyles.css";
 import YellowSwig from "../assets/images/location-swiggles/YellowSwig.js";
 import ArrivedIcon from "../assets/icons/ArrivedIcon.js";
 import BackIcon from "../assets/icons/BackIcon.js";
+import CopyIcon from "../assets/icons/CopyIcon.js";
 
 export default function HomeView() {
   const [steps, setSteps] = useState([
@@ -22,17 +23,16 @@ export default function HomeView() {
   const [numFriends, setNumFriends] = useState(2);
 
   const [inputValue, setInputValue] = useState("");
-  
+
   const [showYellowSwig, setShowYellowSwig] = useState(false);
 
   useEffect(() => {
-    if (stage === 1){
+    if (stage === 1) {
       setSteps((prevSteps) => [
         { ...prevSteps[0], stepCompleted: false },
-        {...prevSteps[1], stepCompleted: false}
+        { ...prevSteps[1], stepCompleted: false },
       ]);
-    }
-    else if (stage === 2) {
+    } else if (stage === 2) {
       setTimeout(() => {
         setSteps((prevSteps) => [
           { ...prevSteps[0], stepCompleted: true },
@@ -78,8 +78,6 @@ export default function HomeView() {
     }
   };
 
-  console.log(stage);
-
   return (
     <div className="w-full h-full flex flex-col">
       <div className="bg-white h-40 w-full relative pb-3">
@@ -121,13 +119,22 @@ export default function HomeView() {
             />
           ))}
         </div>
-        {!showSteps && (
-          <div
-            className="w-full flex px-20"
-            onClick={() => setNumFriends(numFriends + 1)}
-          >
-            <div className="bg-lime rounded-full text-white px-2">
-              <h3>+ add friend</h3>
+        {stage === 1 && (
+          <div className="w-full flex justify-between px-20">
+            <div
+              className=" flex "
+              onClick={() => setNumFriends(numFriends + 1)}
+            >
+              <div className="bg-lime rounded-full text-white px-2">
+                <h3>+ add friend</h3>
+              </div>
+            </div>
+
+            <div className="flex" onClick={() => setNumFriends(numFriends + 1)}>
+              <div className="bg-yellow flex flex-row rounded-full text-white px-2 justify-center items-center">
+                <CopyIcon />
+                <h3>party link</h3>
+              </div>
             </div>
           </div>
         )}
@@ -136,19 +143,23 @@ export default function HomeView() {
             <ArrivedIcon /> <h3>Your friends have arrived!</h3>
           </div>
         )}
-        { stage === 2 && (
+        {stage === 2 && (
           <div className="absolute left-4 top-3" onClick={goBack}>
             <BackIcon />
           </div>
         )}
       </div>
+
       <Map containerStyle={{ width: "100vw", height: "80vh", zIndex: 20 }} />
-      <InfoDrawer
-        icon_active={!!inputValue}
-        stage={stage}
-        onClickButton={() => setStage(stage + 1)}
-        exitButton={() => setStage(1)}
-      />
+
+      <div className="relative h-20">
+        <InfoDrawer
+          stage={stage}
+          onClickButton={() => setStage(stage + 1)}
+          exitButton={() => setStage(1)}
+          icon_active={inputValue}
+        />
+      </div>
     </div>
   );
 }
