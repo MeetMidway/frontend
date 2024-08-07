@@ -9,6 +9,7 @@ export const AddressInput = ({
   removeAddress,
   onChange,
   disableRemove,
+  manageButton
 }) => {
   const PathImg = () => {
     return (
@@ -61,7 +62,11 @@ export const AddressInput = ({
       </div>
 
       <div className="flex justify-center items-center">
-        {(type === "self" && <OptionsIcon />) || (
+        {(type === "self" && (
+          <div onClick={manageButton}>
+            <OptionsIcon />
+          </div>
+        )) || (
           <div
             className={`${disableRemove && "invisible"}`}
             onClick={removeAddress}
@@ -74,9 +79,7 @@ export const AddressInput = ({
   );
 };
 
-
 export const Modal = ({ isOpen, onClose, title, children }) => {
-
   return (
     <>
       {isOpen && (
@@ -94,4 +97,4 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
       )}
     </>
   );
-}
+};
