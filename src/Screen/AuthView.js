@@ -9,6 +9,7 @@ import BlueSwig from "../assets/images/auth-swiggles/BlueSwig";
 import DarkBlueSwig from "../assets/images/auth-swiggles/DarkBlueSwig";
 import YellowSwig from "../assets/images/auth-swiggles/YellowSwig";
 import RedSwig from "../assets/images/auth-swiggles/RedSwig";
+import { TextInput } from "./utility_components";
 import { useState } from "react";
 
 function AuthView() {
@@ -22,26 +23,7 @@ function AuthView() {
   };
 
 
-  const TextInput = ({ type }) => {
-    return (
-      <div
-        className={`flex bg-white rounded-full gap-x-1 p-3 w-full shadow-lg items-center`}
-      >
-        <div>
-          {(type === "Username" && <AccountIcon width={25} height={24} />) ||
-            (type === "Password" && <LockIcon width={25} height={18} />)}
-        </div>
-
-        <input
-          type="text"
-          placeholder={type}
-          className="placeholder-gray-200 focus:outline-none text-gray-300 w-full"
-        />
-      </div>
-    );
-  };
-
-
+  
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">

@@ -2,6 +2,10 @@ import OptionsIcon from "../assets/icons/OptionsIcon";
 import RemoveIcon from "../assets/icons/RemoveIcon";
 import PinIconOutline from "../assets/icons/PinIcons/PinIconOutline";
 import XIcon from "../assets/icons/XIcon";
+import AccountIcon from "../assets/icons/AccountIcon";
+import LockIcon from "../assets/icons/LockIcon";
+import RouteIcon from "../assets/icons/RouteIcon";
+
 
 export const AddressInput = ({
   type,
@@ -96,5 +100,25 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
         </div>
       )}
     </>
+  );
+};
+
+
+export const TextInput = ({ type, padding }) => {
+  return (
+    <div
+      className={`flex bg-white rounded-full gap-x-1 ${padding || "p-3"} w-full shadow-lg items-center`}
+    >
+      <div>
+        {(type === "Username" && <AccountIcon width={25} height={24} />) ||
+          (type === "Password" && <LockIcon width={25} height={18} />) || (type === "Location" && <RouteIcon width={25} color={"#9A9A9A"} />)}
+      </div>
+
+      <input
+        type="text"
+        placeholder={type}
+        className="placeholder-gray-200 focus:outline-none text-gray-300 text-lg w-full"
+      />
+    </div>
   );
 };
