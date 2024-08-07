@@ -11,8 +11,10 @@ import BackIcon from "../assets/icons/BackIcon.js";
 import CopyIcon from "../assets/icons/CopyIcon.js";
 import { Modal } from "./utility_components.js";
 import AccountIcon from "../assets/icons/AccountIcon.js";
+import { useNavigate } from "react-router-dom";
 
 export default function HomeView() {
+  const nav = useNavigate()
   const [steps, setSteps] = useState([
     { step: "Add Friends", stepCompleted: false },
     { step: "Midway!", stepCompleted: false },
@@ -82,9 +84,10 @@ export default function HomeView() {
     }
   };
 
-  const ModalButton = ({ type, text }) => {
+  const ModalButton = ({ type, text, onButton }) => {
     return (
       <div
+      onClick={onButton}
         className={`${
           (type === "link" && "bg-purple") || "bg-white"
         } rounded-lg border border-gray-200 flex justify-between items-center px-6  py-3 gap-x-6`}
@@ -185,7 +188,7 @@ export default function HomeView() {
         >
           <div className="flex flex-col gap-y-2 px-5 pb-5">
             <ModalButton type={"link"} text={"copy party link"} />
-            <ModalButton type={"account"} text={"edit profile"} />
+            <ModalButton type={"account"} text={"edit profile"} onButton={() => nav("/manage-account")}/>
           </div>
         </Modal>
       </div>

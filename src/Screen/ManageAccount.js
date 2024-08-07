@@ -11,7 +11,7 @@ export default function ManageAccount() {
       </div>
 
       <div className="flex flex-col gap-y-5 px-10">
-        <TextInput type="Username" padding={"px-3 py-4"}/>
+        <TextInput type="Email" padding={"px-3 py-4"}/>
         <TextInput type="Password" padding={"px-3 py-4"}/>
         <TextInput type="Location" padding={"px-3 py-4"}/>
 

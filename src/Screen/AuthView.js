@@ -11,99 +11,33 @@ import YellowSwig from "../assets/images/auth-swiggles/YellowSwig";
 import RedSwig from "../assets/images/auth-swiggles/RedSwig";
 import { TextInput } from "./utility_components";
 import { useState } from "react";
-import { auth, signInWithEmailAndPassword } from "../Firebase";
+import { useEffect } from "react";
+import { auth, signInWithEmailAndPassword } from "../Firebase/Firebase";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+import {
+  signIn,
+  signInWithGoogle,
+  signUp,
+} from "../Firebase/firebaseFuncs";
 
 function AuthView() {
   const navigate = useNavigate();
   const [animate, setAnimate] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [auth, setAuth] = useState("");
+
   const [isLogin, setIsLogin] = useState(true);
 
-  console.log(auth);
+  //data set
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [location, setLocation] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  // Function to verify email and password input
-  const verifyInputs = () => {
-    if (!email || !password) {
-      setError("Please fill in both email and password.");
-      return false;
-    }
-
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (!emailPattern.test(email)) {
-      setError("Please enter a valid email address.");
-      return false;
-    }
-
-    setError(""); // Clear any previous error messages
-    return true;
-  };
-
-  // Sign in function for manual email and password entry
-  const signIn = () => {
-    if (!verifyInputs()) {
-      return;
-    }
-    setAnimate(true);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("Signed in success:", user);
-        navigate("/add-preferences");
-      })
-      // in case of error
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error("Sign in error:", errorCode, errorMessage);
-        setError("Invalid email or password. Please try again!"); // replace with better error msg
-        setAnimate(false);
-      });
-  };
-
-  console.log(isLogin);
-
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        console.log("Signed in with Google:", user);
-        navigate("/add-preferences");
-      })
-      // in case of error
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error("Error signing in with Google:", errorCode, errorMessage);
-        setError("Error signing in with Google. Please try again.");
-      });
-  };
-
-  const TextInput = ({ type, value, onChange }) => {
-    return (
-      <div
-        className={`flex bg-white rounded-full gap-x-1 p-3 w-full shadow-lg items-center`}
-      >
-        <div>
-          {(type === "Username" && <AccountIcon width={25} height={24} />) ||
-            (type === "Password" && <LockIcon width={25} height={18} />)}
-        </div>
-
-        <input
-          type={type === "Password" ? "password" : "text"}
-          placeholder={type}
-          value={value}
-          onChange={onChange}
-          className="placeholder-gray-200 focus:outline-none text-gray-300 w-full"
-        />
-      </div>
-    );
-  };
-
+  
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
       <div
@@ -133,19 +67,49 @@ function AuthView() {
             </div>
           </div>
           <div className="flex flex-col items-center">
-            <h3 className="uppercase font-semibold text-gray-600 text-sm">
-              or
-            </h3>
-            <h3 className="text-lg font-semibold tracking-wider">
-              login using your details below
-            </h3>
+            {(isLogin && (
+              <>
+                <h3 className="uppercase font-semibold text-gray-600 text-sm">
+                  or
+                </h3>
+                <h3 className="text-lg font-semibold tracking-wider">
+                  login using your details below
+                </h3>
+              </>
+            )) || (
+              <h3 className="font-semibold text-gray-400 text-xl">
+                Enter your details
+              </h3>
+            )}
           </div>
         </div>
 
-        <div className="flex flex-col items-center w-5/6 gap-y-4 mb-8">
-          {error && <p className="text-red-500">{error}</p>}
+        <div className="flex flex-col items-center w-5/6 gap-y-4 mb-8 relative">
+          {error && (
+            <p
+              className={`absolute ${isLogin ? "-top-7" : "-top-16"}
+           text-red text-xs`}
+            >
+              {error}
+            </p>
+          )}
+
+          {!isLogin && (
+            <div className="flex gap-x-3">
+              <TextInput
+                type="First Name"
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+              />
+              <TextInput
+                type="Last Name"
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+              />
+            </div>
+          )}
           <TextInput
-            type="Username"
+            type="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
@@ -154,23 +118,28 @@ function AuthView() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
-          {!isLogin && <TextInput
-            type="Location"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />}
+          {!isLogin && (
+            <TextInput
+              type="Location"
+              value={location}
+              onChange={(event) => setLocation(event.target.value)}
+            />
+          )}
           <div className="w-full flex justify-end">
             <Link>
-              <h3 className="text-gray-300">Forgot your password?</h3>
+              <h3 className="text-gray-300">
+                {isLogin ? "Forgot your password?" : "Ready to MeetMidway?"}
+              </h3>
             </Link>
           </div>
         </div>
         <div className="w-3/4 flex justify-end items-center gap-x-3">
-          <h3 className="font-semibold text-2xl">Sign in</h3>
+          <h3 className="font-semibold text-2xl">
+            {isLogin ? "Sign in" : "Create Account"}
+          </h3>
           {/* placeholder as zindex issues */}
           <div
             className="bg-green rounded-full px-5 py-2 invisible"
-            onClick={signIn}
             style={{ cursor: "pointer" }}
           >
             <ArrowRight />
@@ -207,11 +176,29 @@ function AuthView() {
 
       <div
         className={`bg-green rounded-full px-5 py-2 absolute`}
-        onClick={signIn}
-        style={{ zIndex: 25, bottom: "21vh", right: "5.5rem" }}
+        onClick={
+          isLogin
+            ? () => signIn({ email, password, setAnimate, error, setError, navigate })
+            : () => signUp({
+                email,
+                password,
+                firstName,
+                lastName,
+                location,
+                error,
+                setError,
+                navigate
+              })
+        }
+        style={{
+          zIndex: 25,
+          bottom: `${isLogin ? "21vh" : "20.5vh"}`,
+          right: "5.5rem",
+        }}
       >
         <ArrowRight />
       </div>
+
       <div
         className={`absolute -top-20 ${animate && "move-out-top"}`}
         style={{ zIndex: 20 }}

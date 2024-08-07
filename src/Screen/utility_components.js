@@ -104,13 +104,13 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
 };
 
 
-export const TextInput = ({ type, padding }) => {
+export const TextInput = ({ type, padding, onChange, value }) => {
   return (
     <div
       className={`flex bg-white rounded-full gap-x-1 ${padding || "p-3"} w-full shadow-lg items-center`}
     >
       <div>
-        {(type === "Username" && <AccountIcon width={25} height={24} />) ||
+        {(type === "Email" && <AccountIcon width={25} height={24} />) ||
           (type === "Password" && <LockIcon width={25} height={18} />) || (type === "Location" && <RouteIcon width={25} color={"#9A9A9A"} />)}
       </div>
 
@@ -118,6 +118,8 @@ export const TextInput = ({ type, padding }) => {
         type="text"
         placeholder={type}
         className="placeholder-gray-200 focus:outline-none text-gray-300 text-lg w-full"
+        onChange={onChange}
+        value={value}
       />
     </div>
   );

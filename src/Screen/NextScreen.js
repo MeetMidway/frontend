@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Typography, Container, Box } from '@mui/material';
-import { db, auth } from '../Firebase'; // Ensure correct path
+import { db, auth } from '../Firebase/Firebase'; // Ensure correct path
 import { addDoc, collection, getDocs } from "firebase/firestore";
 
 /**
