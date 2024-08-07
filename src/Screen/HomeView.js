@@ -1,152 +1,194 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  GoogleMap,
-  useJsApiLoader,
-  MarkerF,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
-import BluePinIcon from "../assets/icons/PinIcons/BluePinIcon.svg";
-import RedPinIcon from "../assets/icons/PinIcons/RedPinIcon.svg";
-import GreenPinIcon from "../assets/icons/PinIcons/GreenPinIcon.svg";
-import YellowPinIcon from "../assets/icons/PinIcons/YellowPinIcon.svg";
-import MidpointIcon from "../assets/icons/PinIcons/MidpointIcon.svg";
+import Map from "./MapSystem/Map.js";
+import PurpleSwig from "../assets/images/location-swiggles/PurpleSwig.js";
+import MidwayNav from "./MapSystem/MidwayNav.js";
+import { useState, useEffect } from "react";
+import InfoDrawer from "./MapSystem/InfoDrawer.js";
+import { AddressInput } from "./utility_components.js";
+import "./screenstyles.css";
+import YellowSwig from "../assets/images/location-swiggles/YellowSwig.js";
+import ArrivedIcon from "../assets/icons/ArrivedIcon.js";
+import BackIcon from "../assets/icons/BackIcon.js";
+import CopyIcon from "../assets/icons/CopyIcon.js";
+import { Modal } from "./utility_components.js";
+import AccountIcon from "../assets/icons/AccountIcon.js";
 
-const containerStyle = {
-  width: "100vw",
-  height: "100vh",
-};
+export default function HomeView() {
+  const [steps, setSteps] = useState([
+    { step: "Add Friends", stepCompleted: false },
+    { step: "Midway!", stepCompleted: false },
+  ]);
 
-// Example addresses within New York City
-const friendsAddresses = [
-  { lat: 40.771155, lng: -73.813196 },
-  { lat: 40.7700092, lng: -73.8149323 },
-  { lat: 40.7654828, lng: -73.8132505 },
-];
+  const [stage, setStage] = useState(1);
 
-//will import coord for midpoint
-const center = { lat: 40.7663, lng: -73.81423 };
+  const [showSteps, setShowSteps] = useState(false);
 
-function Map() {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyBdKyA2xeRRyMIb-Aj7WkY7VH7RlsVt6to", //remove api key
-  });
+  const [numFriends, setNumFriends] = useState(2);
 
-  const strokeColors = ["#FF0000", "#FDBF49", "#2985FF", "#2CCE59"];
-  
-  
-  //state variables
-  const [map, setMap] = useState(null);
-  const [directionsResults, setDirectionsResults] = useState([]);
-  
+  const [inputValue, setInputValue] = useState("");
 
-  const onLoad = useCallback(function callback(map) {
-    // bounds for all ze markers
-    const bounds = new window.google.maps.LatLngBounds();
-    friendsAddresses.forEach((address) =>
-      bounds.extend(new window.google.maps.LatLng(address.lat, address.lng))
-    );
-    bounds.extend(new window.google.maps.LatLng(center.lat, center.lng));
-    map.fitBounds(bounds);
-    setMap(map);
-  }, []);
+  const [showYellowSwig, setShowYellowSwig] = useState(false);
 
-  const onUnmount = useCallback(function callback(map) {
-    setMap(null);
-  }, []);
-
-  const fetchDirections = useCallback(async () => {
-    if (!map) return;
-
-    const directionsService = new window.google.maps.DirectionsService();
-
-    //getting the direction from each friend to the midpoint
-    const routePromises = friendsAddresses.map(
-      (address) =>
-        new Promise((resolve, reject) => {
-          directionsService.route(
-            {
-              origin: new window.google.maps.LatLng(address.lat, address.lng),
-              destination: new window.google.maps.LatLng(
-                center.lat,
-                center.lng
-              ),
-              travelMode: window.google.maps.TravelMode.DRIVING,
-            },
-            (result, status) => {
-              if (status === window.google.maps.DirectionsStatus.OK) {
-                resolve(result);
-              } else {
-                reject(`Directions request failed due to ${status}`);
-              }
-            }
-          );
-        })
-    );
-
-    //adding directions
-    try {
-      const results = await Promise.all(routePromises);
-      setDirectionsResults(results);
-    } catch (error) {
-      console.error("Error fetching directions:", error);
-    }
-  }, [map]);
-
-  //lisening for any state changes
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (isLoaded && map) {
-      fetchDirections();
+    if (stage === 1) {
+      setSteps((prevSteps) => [
+        { ...prevSteps[0], stepCompleted: false },
+        { ...prevSteps[1], stepCompleted: false },
+      ]);
+    } else if (stage === 2) {
+      setTimeout(() => {
+        setSteps((prevSteps) => [
+          { ...prevSteps[0], stepCompleted: true },
+          prevSteps[1],
+        ]);
+
+        setTimeout(() => {
+          setShowYellowSwig(true);
+          setShowSteps(true);
+        }, 500); // Delay before showing the yellow swig
+      }, 300); // Duration of the purple swig animation
+    } else if (stage === 3) {
+      setSteps((prevSteps) => [
+        prevSteps[0],
+        { ...prevSteps[1], stepCompleted: true },
+      ]);
     }
-  }, [isLoaded, map, fetchDirections]);
+  }, [inputValue, stage]);
+  const handleChange = (e) => {
+    setInputValue(e.target.value);
+  };
 
-  //const endpoint = directionsResults[0]?.routes[0].overview_path.length;
+  const pinColors = ["#F61818", "#FDBF49", "#004AAD", "#00C520"];
 
-  
-  return isLoaded ? (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={14}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
-    >
-      {directionsResults.map((result, index) => (
-        <MarkerF
-          position={directionsResults[index]?.routes[0].overview_path[0]}
-          key={index}
-          icon={
-            (index === 0 && RedPinIcon) ||
-            (index === 1 && YellowPinIcon) ||
-            (index === 2 && BluePinIcon) ||
-            (index === 3 && GreenPinIcon)
-          }
+  //format like [{step: "blah", stepCompleted: boolean}]
+
+  const removeAddress = () => {
+    setNumFriends(numFriends - 1);
+  };
+
+  const goBack = () => {
+    setStage(stage - 1);
+    if (stage === 1) {
+      setSteps((prevSteps) => [
+        { ...prevSteps[0], stepCompleted: false },
+        prevSteps[1],
+      ]);
+    } else if (stage === 2) {
+      setSteps((prevSteps) => [
+        prevSteps[0],
+        { ...prevSteps[1], stepCompleted: false },
+      ]);
+    }
+  };
+
+  const ModalButton = ({ type, text }) => {
+    return (
+      <div
+        className={`${
+          (type === "link" && "bg-purple") || "bg-white"
+        } rounded-lg border border-gray-200 flex justify-between items-center px-6  py-3 gap-x-6`}
+      >
+        <h3
+          className={`${
+            (type === "link" && "text-white font-semibold") || "text-black"
+          } `}
+        >
+          {text}
+        </h3>
+        {(type === "link" && <CopyIcon width={25} />) || (
+          <AccountIcon color={"black"} width={25} />
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full h-full flex flex-col relative">
+      <div className="bg-white h-40 w-full relative pb-3">
+        <div className="mt-6" style={{ position: "relative", zIndex: 30 }}>
+          <MidwayNav steps={steps} numSteps={showSteps} stage={stage} />
+        </div>
+
+        {
+          <div
+            className={`absolute bottom-0 ${showSteps && "move-out-top"}`}
+            style={{ bottom: "-23rem", left: "-18rem", zIndex: 20 }}
+          >
+            <PurpleSwig />{" "}
+          </div>
+        }
+
+        {showYellowSwig && (
+          <div
+            className={`absolute move-in-top`}
+            style={{ bottom: "-25rem", zIndex: 20 }}
+          >
+            <YellowSwig />
+          </div>
+        )}
+      </div>
+      <div
+        className="bg-white h-1/3 w-full flex flex-col justify-between pb-3 relative"
+        style={{ zIndex: 20 }}
+      >
+        <div className="overflow-y-auto w-full h-[9.5rem] relative">
+          <AddressInput type={"self"} onChange={handleChange} manageButton={() => setIsModalOpen(true)} />
+          {[...Array(numFriends)].map((_, index) => (
+            <AddressInput
+              color={pinColors[index]}
+              key={index}
+              removeAddress={removeAddress}
+              onChange={handleChange}
+              disableRemove={stage > 1}
+            />
+          ))}
+        </div>
+        {stage === 1 && (
+          <div
+            className=" flex px-20"
+            onClick={() => setNumFriends(numFriends + 1)}
+          >
+            <div className="bg-lime rounded-full text-white px-2">
+              <h3>+ add friend</h3>
+            </div>
+          </div>
+        )}
+        {stage === 3 && (
+          <div className="w-full flex justify-center items-center gap-x-2">
+            <ArrivedIcon /> <h3>Your friends have arrived!</h3>
+          </div>
+        )}
+        {stage === 2 && (
+          <div className="absolute left-4 top-3" onClick={goBack}>
+            <BackIcon />
+          </div>
+        )}
+      </div>
+
+      <Map containerStyle={{ width: "100vw", height: "80vh", zIndex: 20 }} />
+
+      <div className="relative h-20">
+        <InfoDrawer
+          stage={stage}
+          onClickButton={() => setStage(stage + 1)}
+          exitButton={() => setStage(1)}
+          icon_active={inputValue}
         />
-      ))}
-      <MarkerF
-        position={center}
-        key={"center"}
-        icon={MidpointIcon}
-      />
-
-      {directionsResults.map((result, index) => (
-        <DirectionsRenderer
-          key={index}
-          directions={result}
-          options={{
-            polylineOptions: {
-              strokeColor: strokeColors[index],
-              strokeWeight: 5,
-            },
-            suppressMarkers: true,
-          }}
-        />
-      ))}
-    </GoogleMap>
-  ) : (
-    <></>
+      </div>
+      <div className="relative items-center">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Modal Title"
+          className="w-full"
+        >
+          <div className="flex flex-col gap-y-2 px-5 pb-5">
+            <ModalButton type={"link"} text={"copy party link"} />
+            <ModalButton type={"account"} text={"edit profile"} />
+          </div>
+        </Modal>
+      </div>
+    </div>
   );
 }
-
-export default React.memo(Map);

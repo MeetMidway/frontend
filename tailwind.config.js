@@ -19,6 +19,8 @@ module.exports = {
         },
         "hot-pink": "#ED266B",
         "utility-blue": "#236AF2",
+        "base-white": "#F0F0F0",
+        "disabled-purple": "#3A3346"
       },
     },
   },
