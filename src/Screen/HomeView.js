@@ -8,6 +8,9 @@ import "./screenstyles.css";
 import YellowSwig from "../assets/images/location-swiggles/YellowSwig.js";
 import ArrivedIcon from "../assets/icons/ArrivedIcon.js";
 import BackIcon from "../assets/icons/BackIcon.js";
+import CopyIcon from "../assets/icons/CopyIcon.js";
+import { Modal } from "./utility_components.js";
+import AccountIcon from "../assets/icons/AccountIcon.js";
 
 export default function HomeView() {
   const [steps, setSteps] = useState([
@@ -22,17 +25,18 @@ export default function HomeView() {
   const [numFriends, setNumFriends] = useState(2);
 
   const [inputValue, setInputValue] = useState("");
-  
+
   const [showYellowSwig, setShowYellowSwig] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(true);
+
   useEffect(() => {
-    if (stage === 1){
+    if (stage === 1) {
       setSteps((prevSteps) => [
         { ...prevSteps[0], stepCompleted: false },
-        {...prevSteps[1], stepCompleted: false}
+        { ...prevSteps[1], stepCompleted: false },
       ]);
-    }
-    else if (stage === 2) {
+    } else if (stage === 2) {
       setTimeout(() => {
         setSteps((prevSteps) => [
           { ...prevSteps[0], stepCompleted: true },
@@ -78,10 +82,29 @@ export default function HomeView() {
     }
   };
 
-  console.log(stage);
+  const ModalButton = ({ type, text }) => {
+    return (
+      <div
+        className={`${
+          (type === "link" && "bg-purple") || "bg-white"
+        } rounded-lg border border-gray-200 flex justify-between items-center px-6  py-3 gap-x-6`}
+      >
+        <h3
+          className={`${
+            (type === "link" && "text-white font-semibold") || "text-black"
+          } `}
+        >
+          {text}
+        </h3>
+        {(type === "link" && <CopyIcon width={25} />) || (
+          <AccountIcon color={"black"} width={25} />
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col relative">
       <div className="bg-white h-40 w-full relative pb-3">
         <div className="mt-6" style={{ position: "relative", zIndex: 30 }}>
           <MidwayNav steps={steps} numSteps={showSteps} stage={stage} />
@@ -121,9 +144,9 @@ export default function HomeView() {
             />
           ))}
         </div>
-        {!showSteps && (
+        {stage === 1 && (
           <div
-            className="w-full flex px-20"
+            className=" flex px-20"
             onClick={() => setNumFriends(numFriends + 1)}
           >
             <div className="bg-lime rounded-full text-white px-2">
@@ -136,19 +159,36 @@ export default function HomeView() {
             <ArrivedIcon /> <h3>Your friends have arrived!</h3>
           </div>
         )}
-        { stage === 2 && (
+        {stage === 2 && (
           <div className="absolute left-4 top-3" onClick={goBack}>
             <BackIcon />
           </div>
         )}
       </div>
+
       <Map containerStyle={{ width: "100vw", height: "80vh", zIndex: 20 }} />
-      <InfoDrawer
-        icon_active={!!inputValue}
-        stage={stage}
-        onClickButton={() => setStage(stage + 1)}
-        exitButton={() => setStage(1)}
-      />
+
+      <div className="relative h-20">
+        <InfoDrawer
+          stage={stage}
+          onClickButton={() => setStage(stage + 1)}
+          exitButton={() => setStage(1)}
+          icon_active={inputValue}
+        />
+      </div>
+      <div className="relative items-center">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Modal Title"
+          className="w-full"
+        >
+          <div>
+            <ModalButton type={"link"} text={"copy party link"} />
+            <ModalButton type={"account"} text={"edit profile"} />
+          </div>
+        </Modal>
+      </div>
     </div>
   );
 }

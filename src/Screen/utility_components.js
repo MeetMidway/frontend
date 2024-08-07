@@ -1,6 +1,7 @@
 import OptionsIcon from "../assets/icons/OptionsIcon";
 import RemoveIcon from "../assets/icons/RemoveIcon";
 import PinIconOutline from "../assets/icons/PinIcons/PinIconOutline";
+import XIcon from "../assets/icons/XIcon";
 
 export const AddressInput = ({
   type,
@@ -72,3 +73,25 @@ export const AddressInput = ({
     </div>
   );
 };
+
+
+export const Modal = ({ isOpen, onClose, title, children }) => {
+
+  return (
+    <>
+      {isOpen && (
+        <div className="fixed w-full inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
+          <div className="relative bg-white rounded-lg shadow-xl mx-4">
+            <div className="flex justify-between items-center p-4 ">
+              <h2 className="text-xl font-semibold">{title}</h2>
+              <div onClick={onClose}>
+                <XIcon />
+              </div>
+            </div>
+            <div className="p-4">{children}</div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
