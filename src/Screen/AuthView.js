@@ -9,6 +9,7 @@ import BlueSwig from "../assets/images/auth-swiggles/BlueSwig";
 import DarkBlueSwig from "../assets/images/auth-swiggles/DarkBlueSwig";
 import YellowSwig from "../assets/images/auth-swiggles/YellowSwig";
 import RedSwig from "../assets/images/auth-swiggles/RedSwig";
+import { TextInput } from "./utility_components";
 import { useState } from "react";
 import { auth, signInWithEmailAndPassword } from "../Firebase";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";

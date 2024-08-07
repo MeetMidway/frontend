@@ -1,7 +1,8 @@
 import React from "react"
 import AuthView from "./Screen/AuthView"
 import HomeView from "./Screen/HomeView";
-import NewUserView from "./Screen/NewUserView"
+import ManageAccount from "./Screen/ManageAccount";
+
 
 
 

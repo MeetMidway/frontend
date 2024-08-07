@@ -1,8 +1,8 @@
-export default function BackIcon() {
+export default function BackIcon({width, height}) {
   return (
     <svg
-      width="14"
-      height="22"
+      width={width || "14"}
+      height={height || "22"}
       viewBox="0 0 14 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
