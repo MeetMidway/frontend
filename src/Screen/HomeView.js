@@ -28,7 +28,7 @@ export default function HomeView() {
 
   const [showYellowSwig, setShowYellowSwig] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (stage === 1) {
