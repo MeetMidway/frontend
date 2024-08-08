@@ -54,7 +54,7 @@ function AuthView() {
               className={`flex items-center gap-5 bg-white rounded-md px-6 py-4 shw ${
                 !isLogin && "hidden"
               }`}
-              onClick={signInWithGoogle}
+              onClick={() => signInWithGoogle(navigate, setError)}
               style={{ cursor: "pointer" }}
             >
               <div className="bg-white shw rounded-full flex items-center p-2">

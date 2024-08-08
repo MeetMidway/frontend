@@ -96,7 +96,7 @@ const verifyInputs = ({email, password, error, setError}) => {
     }
   };
 
-function checkFields({email, firstName, lastName, location, password}) {
+export function checkFields({email, firstName, lastName, location, password}) {
   return (
     email?.length > 0 &&
     firstName?.length > 0 &&
@@ -112,7 +112,7 @@ export function signUp({email, password, firstName, lastName, location, error, s
       .then(() => {
         const data = {
           first_name: firstName,
-          lastName: lastName,
+          last_name: lastName,
           email: email,
           location: location,
           preferences: [],
