@@ -21,7 +21,7 @@ export default function MidwayNav({ steps, numSteps, stage }) {
           )}
         </div>
         <div className="flex flex-col items-center justify-center gap-y-1">
-          <div class="w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[8px] border-b-utility-blue" />
+          <div className="w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[8px] border-b-utility-blue" />
 
           <div className="bg-utility-blue rounded-full px-2 py-1 button-shadow">
             <h3 className="text-white text-lg font-bold">{step}</h3>
