@@ -26,7 +26,7 @@ import MidpointIcon from "../../assets/icons/PinIcons/MidpointIcon.svg";
 function Map({ friendsAddresses, itinerary, containerStyle }) {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "", // remove API key
+    googleMapsApiKey: "AIzaSyBdKyA2xeRRyMIb-Aj7WkY7VH7RlsVt6to", // remove API key
   });
 
   const strokeColors = ["#FF0000", "#FDBF49", "#2985FF", "#2CCE59"];
