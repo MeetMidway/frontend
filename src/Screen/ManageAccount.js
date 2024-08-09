@@ -7,7 +7,6 @@ import { updateEmail, signOut } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../Firebase/Firebase";
 import { checkFields } from "../Firebase/firebaseFuncs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import LeaveIcon from "../assets/icons/LeaveIcon";
 import PreferencesList from "./Preferences/List";
 import AddIcon from "../assets/icons/AddIcon";
@@ -54,7 +53,6 @@ export default function ManageAccount() {
             // ...
           })
           .catch((error) => {
-            
             setError("Invalid Email");
             setTimeout(() => {
               setError(""); // Reset after 5 seconds
@@ -94,16 +92,13 @@ export default function ManageAccount() {
     }
   };
   const handleLocation = (val, idx) => {
-    setLocation(val)
-  }
-
-  
+    setLocation(val);
+  };
 
   async function handleSignOut() {
     signOut(auth)
       .then(() => {
-        AsyncStorage.removeItem("password");
-        AsyncStorage.removeItem("email");
+        localStorage.clear(); // we need somethig less volatile
         nav("/signin");
       })
       .catch((error) => {
@@ -111,8 +106,7 @@ export default function ManageAccount() {
       });
   }
 
-  console.log(update)
-  
+  console.log(update);
 
   return (
     <div className="w-full h-full bg-base-white flex flex-col gap-y-16 justify-between pb-10 items-center">
@@ -202,19 +196,16 @@ export default function ManageAccount() {
         <h3>update</h3>
       </div>
 
-      {update && (
-        <div
-          className="absolute top-24 text-lime  opacity-50 font-semibold text-xl text-white rounded-lg px-20 py-3"
-    
-        >
+      {(update && (
+        <div className="absolute top-24 text-lime  opacity-50 font-semibold text-xl text-white rounded-lg px-20 py-3">
           <h3>updated successfully!</h3>
         </div>
-      ) || (!!error &&  <div
-        className="absolute top-24   opacity-50 font-semibold text-xl text-white rounded-lg px-20 py-3"
-      
-      >
-        <h3 className="text-red">{error}</h3>
-      </div> )}
+      )) ||
+        (!!error && (
+          <div className="absolute top-24   opacity-50 font-semibold text-xl text-white rounded-lg px-20 py-3">
+            <h3 className="text-red">{error}</h3>
+          </div>
+        ))}
     </div>
   );
 }

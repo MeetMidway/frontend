@@ -89,7 +89,7 @@ function Map({ friendsAddresses, itinerary, containerStyle, stage }) {
     } catch (error) {
       console.error("Error fetching directions:", error);
     }
-  }, [map, currentLocation, itinerary, friendsAddresses]);
+  }, [map, currentLocation, itinerary, friendsAddresses, stage]);
 
   // Reset directions when addresses change
   useEffect(() => {
