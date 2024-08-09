@@ -5,7 +5,7 @@ import XIcon from "../assets/icons/XIcon";
 import AccountIcon from "../assets/icons/AccountIcon";
 import LockIcon from "../assets/icons/LockIcon";
 import RouteIcon from "../assets/icons/RouteIcon";
-
+import AutoCompleteLocation from "./MapSystem/AutoCompleteLocation";
 
 export const AddressInput = ({
   type,
@@ -13,7 +13,9 @@ export const AddressInput = ({
   removeAddress,
   onChange,
   disableRemove,
-  manageButton
+  manageButton,
+  value="",
+  idx
 }) => {
   const PathImg = () => {
     return (
@@ -53,17 +55,16 @@ export const AddressInput = ({
         )}
       </div>
 
-      <div className="border-[1px] rounded-md flex justify-center px-2 w-2/3">
-        <input
-          type="text"
-          placeholder={
-            (type === "self" && "Your Address") || "Enter Friend's Address"
-          }
-          className="placeholder-gray-200 focus:outline-none w-full bg-white"
-          onChange={onChange}
-          disabled={disableRemove}
-        />
-      </div>
+      <AutoCompleteLocation
+        placeholder={
+          (type === "self" && "Your Address") || "Enter Friend's Address"
+        }
+        idx={idx}
+        autocomplete="off"
+        onChange={onChange}
+        disabled={disableRemove}
+        value={value}
+      />
 
       <div className="flex justify-center items-center">
         {(type === "self" && (
@@ -103,15 +104,17 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-
 export const TextInput = ({ type, padding, onChange, value }) => {
   return (
     <div
-      className={`flex bg-white rounded-full gap-x-1 ${padding || "p-3"} w-full shadow-lg items-center`}
+      className={`flex bg-white rounded-full gap-x-1 ${
+        padding || "p-3"
+      } w-full shadow-lg items-center`}
     >
       <div>
         {(type === "Email" && <AccountIcon width={25} height={24} />) ||
-          (type === "Password" && <LockIcon width={25} height={18} />) || (type === "Location" && <RouteIcon width={25} color={"#9A9A9A"} />)}
+          (type === "Password" && <LockIcon width={25} height={18} />) ||
+          (type === "Location" && <RouteIcon width={25} color={"#9A9A9A"} />)}
       </div>
 
       <input

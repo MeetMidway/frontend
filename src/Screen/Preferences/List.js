@@ -1,56 +1,105 @@
-import React, { useState } from 'react';
-import PreferenceItem from './Item';
+import React, { useState } from "react";
 
-export default function PreferencesList({ preferences, setPreferences }) {
-  const colors = ['bg-purple', 'bg-yellow', 'bg-red', 'bg-blue', 'bg-green'];
+export default function PreferencesList({
+  preferences,
+  setPreferences,
+  selectedPrefs,
+  setSelectedPref,
+  height,
+  width,
+}) {
+  const colors = [
+    { selected: "#FF3A3A", unselected: "#FBAAAA" },
+    { selected: "#FDBF49", unselected: "#F4D497" },
+    { selected: "#2CCE59", unselected: "#A0ECA0" },
+    { selected: "#5498FF", unselected: "#A4C7FF" },
+    { selected: "#DCD7D7", unselected: "#F2EFEF" },
+    { selected: "#673AB7", unselected: "#BAA2E4" },
+  ];
 
-  const handlePreferenceClick = (preference) => {
+  const handlePreferenceClick = (preference, colorIndex) => {
     const updatedPreferences = preferences.map((pref) => {
       if (pref.name === preference.name) {
-        return { ...pref, isRanked: !pref.isRanked };
+        return { ...pref, isSelected: !pref.isSelected, colorRef: colorIndex };
       }
       return pref;
     });
 
-    const ranked = updatedPreferences.filter(pref => pref.isRanked).sort((a, b) => a.rank - b.rank);
+    const ranked = updatedPreferences
+      .filter((pref) => pref.isSelected)
+      .sort((a, b) => a.rank - b.rank);
     ranked.forEach((pref, index) => {
       pref.rank = index + 1;
     });
 
-    const unranked = updatedPreferences.filter(pref => !pref.isRanked);
+    const unranked = updatedPreferences.filter((pref) => !pref.isSelected);
 
     setPreferences([...ranked, ...unranked]);
+    setSelectedPref([...ranked]);
   };
 
-  const rankedPreferences = preferences.filter(pref => pref.isRanked).sort((a, b) => a.rank - b.rank);
-  const unrankedPreferences = preferences.filter(pref => !pref.isRanked);
+  console.log(selectedPrefs);
+
+  const rankedPreferences = preferences.filter((pref) => pref.isSelected);
+  const unrankedPreferences = preferences.filter((pref) => !pref.isSelected);
+
+  const PreferenceItem = ({
+    idx,
+    children,
+    isRanked,
+    onClick,
+    color,
+    name,
+  }) => (
+    <div
+      className={`uppercase flex items-center justify-center h-10 px-4 py-1 rounded-lg cursor-pointer text-white`}
+      onClick={onClick}
+      style={{ backgroundColor: color }}
+    >
+      {isRanked && (
+        <span className="text-gray-500 font-bold text-black opacity-80">
+          {idx}&nbsp;
+        </span>
+      )}
+      <h3
+        className={`${isRanked ? "font-bold" : "font-semibold"} ${
+          color === "#F2EFEF" && "text-gray-300"
+        }`}
+      >
+        {name}
+      </h3>
+    </div>
+  );
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div
+      className={`flex flex-wrap justify-center gap-2 overflow-y-auto pt-5 ${
+        preferences.length > 8 && "h-full"
+      }`}
+
+    >
       {rankedPreferences
         .sort((a, b) => a.rank - b.rank)
-        .map((pref, index) => (
+        .map((pref) => (
           <PreferenceItem
             key={pref.name}
             idx={pref.rank}
-            isRanked={pref.isRanked}
-            onClick={() => handlePreferenceClick(pref)}
-            color={colors[index % colors.length]}
-          >
-            {pref.name}
-          </PreferenceItem>
+            isRanked={pref.isSelected}
+            onClick={() => handlePreferenceClick(pref, pref.colorRef)}
+            color={colors[pref.colorRef].selected}
+            name={pref.name}
+          />
         ))}
-      {unrankedPreferences.map((pref) => (
+      {unrankedPreferences.map((pref, index) => (
         <PreferenceItem
           key={pref.name}
           idx={null}
-          isRanked={pref.isRanked}
-          onClick={() => handlePreferenceClick(pref)}
-          color="bg-gray-400"
-        >
-          {pref.name}
-        </PreferenceItem>
+          name={pref.name}
+          isRanked={pref.isSelected}
+          onClick={() => handlePreferenceClick(pref, index % colors.length)}
+          color={colors[index % colors.length].unselected}
+        />
       ))}
     </div>
   );
-};
+}

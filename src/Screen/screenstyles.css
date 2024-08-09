@@ -76,23 +76,83 @@
   }
 }
 
+@keyframes moveInBottom {
+  from {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes moveInRight {
+  from {
+    transform: translateY(100vw);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes moveInLeft {
+  from {
+    transform: translateY(-100vw);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in; /* Adjust the duration and easing as needed */
+}
+
+
+
   .move-out-top {
-    animation: moveOutTop 3s forwards;
+    animation: moveOutTop 1s forwards;
   }
   
   .move-out-right {
-    animation: moveOutRight 3s forwards;
+    animation: moveOutRight 1s forwards;
   }
   
   .move-out-bottom {
-    animation: moveOutBottom 3s forwards;
+    animation: moveOutBottom 1s forwards;
   }
   
   .move-out-left {
-    animation: moveOutLeft 3s forwards;
+    animation: moveOutLeft 1s forwards;
   }
 
   .move-in-top {
     animation: moveInTop 2s forwards;
 
+  }
+
+  .move-in-bottom {
+    animation: moveInBottom 2s forwards;
+  }
+
+  .move-in-right{
+    animation: moveInRight 2s forwards;
+  }
+
+  .move-in-left {
+    animation: moveInLeft 2s forwards;
   }

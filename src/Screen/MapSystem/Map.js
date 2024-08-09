@@ -11,76 +11,78 @@ import GreenPinIcon from "../../assets/icons/PinIcons/GreenPinIcon.svg";
 import YellowPinIcon from "../../assets/icons/PinIcons/YellowPinIcon.svg";
 import MidpointIcon from "../../assets/icons/PinIcons/MidpointIcon.svg";
 
-
-
-// Example addresses within New York City
-// const friendsAddresses = [
-//   { lat: 40.771155, lng: -73.813196 },
-//   { lat: 40.7700092, lng: -73.8149323 },
-//   { lat: 40.7654828, lng: -73.8132505 },
-// ];
-
-// // will import coord for midpoint
-// const center = { lat: 40.7663, lng: -73.81423 };
-
-function Map({ friendsAddresses, itinerary, containerStyle }) {
+function Map({ friendsAddresses, itinerary, containerStyle, stage }) {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyBdKyA2xeRRyMIb-Aj7WkY7VH7RlsVt6to", // remove API key
+    googleMapsApiKey: "YOUR_API_KEY_HERE", // remove API key
   });
 
   const strokeColors = ["#FF0000", "#FDBF49", "#2985FF", "#2CCE59"];
 
-  // state variables
   const [map, setMap] = useState(null);
   const [directionsResults, setDirectionsResults] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
 
-  const onLoad = useCallback(function callback(map) {
-    // bounds for all markers
-    const bounds = new window.google.maps.LatLngBounds();
-    friendsAddresses?.forEach((address) =>
-      bounds.extend(new window.google.maps.LatLng(address.lat, address.lng))
-    );
-    bounds.extend(new window.google.maps.LatLng(itinerary?.lat, itinerary?.lng));
-    map.fitBounds(bounds);
-    setMap(map);
-  }, [itinerary, friendsAddresses]);
+  const onLoad = useCallback(
+    (map) => {
+      const bounds = new window.google.maps.LatLngBounds();
 
-  const onUnmount = useCallback(function callback(map) {
+      !!!friendsAddresses &&
+        friendsAddresses.forEach((address) =>
+          bounds.extend(
+            new window.google.maps.LatLng(
+              address.location.lat,
+              address.location.lng
+            )
+          )
+        );
+
+      bounds.extend(
+        new window.google.maps.LatLng(itinerary?.lat, itinerary?.lng)
+      );
+      map.fitBounds(bounds);
+      setMap(map);
+    },
+    [itinerary, friendsAddresses]
+  );
+
+  const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
 
   const fetchDirections = useCallback(async () => {
-    if (!map || !currentLocation) return;
+    if (!map || !currentLocation || stage === 1) return;
 
     const directionsService = new window.google.maps.DirectionsService();
 
-    // getting the direction from each friend to the midpoint
-    const routePromises = friendsAddresses.map(
-      (address) =>
-        new Promise((resolve, reject) => {
-          directionsService.route(
-            {
-              origin: new window.google.maps.LatLng(address.lat, address.lng),
-              destination: new window.google.maps.LatLng(
-                itinerary.lat,
-                itinerary.lng
-              ),
-              travelMode: window.google.maps.TravelMode.DRIVING,
-            },
-            (result, status) => {
-              if (status === window.google.maps.DirectionsStatus.OK) {
-                resolve(result);
-              } else {
-                reject(`Directions request failed due to ${status}`);
+    const routePromises =
+      !!friendsAddresses[0] &&
+      friendsAddresses.map(
+        (address) =>
+          new Promise((resolve, reject) => {
+            directionsService.route(
+              {
+                origin: new window.google.maps.LatLng(
+                  address.location.lat,
+                  address.location.lng
+                ),
+                destination: new window.google.maps.LatLng(
+                  itinerary.lat,
+                  itinerary.lng
+                ),
+                travelMode: window.google.maps.TravelMode.DRIVING,
+              },
+              (result, status) => {
+                if (status === window.google.maps.DirectionsStatus.OK) {
+                  resolve(result);
+                } else {
+                  reject(`Directions request failed due to ${status}`);
+                }
               }
-            }
-          );
-        })
-    );
+            );
+          })
+      );
 
-    // adding directions
     try {
       const results = await Promise.all(routePromises);
       setDirectionsResults(results);
@@ -89,12 +91,13 @@ function Map({ friendsAddresses, itinerary, containerStyle }) {
     }
   }, [map, currentLocation, itinerary, friendsAddresses]);
 
-  // listening for any state changes
+  // Reset directions when addresses change
   useEffect(() => {
-    if (isLoaded && map) {
+    if ((isLoaded && map) || stage === 1) {
+      setDirectionsResults([]); // Clear previous directions
       fetchDirections();
     }
-  }, [isLoaded, map, fetchDirections]);
+  }, [isLoaded, map, friendsAddresses, itinerary, fetchDirections, stage]);
 
   useEffect(() => {
     if (typeof navigator !== "undefined" && navigator.geolocation) {
@@ -116,20 +119,19 @@ function Map({ friendsAddresses, itinerary, containerStyle }) {
     }
   }, [map]);
 
+  console.log(friendsAddresses);
+
   return isLoaded && currentLocation ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={currentLocation}
       zoom={14}
-      onLoad={friendsAddresses && onLoad}
+      onLoad={onLoad}
       onUnmount={onUnmount}
     >
-      {friendsAddresses?.map((address, index) => (
-        <MarkerF position={address} key={index} />
-      ))}
       {directionsResults.map((result, index) => (
         <MarkerF
-          position={directionsResults[index]?.routes[0].overview_path[0]}
+          position={result.routes[0].overview_path[0]}
           key={index}
           icon={
             (index === 0 && RedPinIcon) ||
@@ -139,24 +141,30 @@ function Map({ friendsAddresses, itinerary, containerStyle }) {
           }
         />
       ))}
-      <MarkerF position={itinerary} key={"center"} icon={MidpointIcon} />
+      {stage > 1 && (
+        <MarkerF position={itinerary} key={"center"} icon={MidpointIcon} />
+      )}
 
-      {directionsResults.map((result, index) => (
-        <DirectionsRenderer
-          key={index}
-          directions={result}
-          options={{
-            polylineOptions: {
-              strokeColor: strokeColors[index],
-              strokeWeight: 5,
-            },
-            suppressMarkers: true,
-          }}
-        />
-      ))}
+      {stage > 1 &&
+        directionsResults.map((result, index) => (
+          <DirectionsRenderer
+            key={index}
+            directions={result}
+            options={{
+              polylineOptions: {
+                strokeColor: strokeColors[index],
+                strokeWeight: 5,
+              },
+              suppressMarkers: true,
+            }}
+            suppressMarkers={true}
+          />
+        ))}
     </GoogleMap>
   ) : (
-    <></>
+    <div style={{height: containerStyle.height}} className="bg-base-white flex items-center justify-center">
+      <h3 className="text-black">Loading Map</h3>
+    </div>
   );
 }
 

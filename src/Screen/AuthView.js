@@ -1,8 +1,7 @@
 import "./screenstyles.css";
 import Logo from "../assets/images/logo.svg";
 import Google from "../assets/images/google.svg";
-import AccountIcon from "../assets/icons/AccountIcon";
-import LockIcon from "../assets/icons/LockIcon";
+
 import { Link, useNavigate } from "react-router-dom";
 import ArrowRight from "../assets/icons/ArrowRightIcon";
 import BlueSwig from "../assets/images/auth-swiggles/BlueSwig";
@@ -10,16 +9,12 @@ import DarkBlueSwig from "../assets/images/auth-swiggles/DarkBlueSwig";
 import YellowSwig from "../assets/images/auth-swiggles/YellowSwig";
 import RedSwig from "../assets/images/auth-swiggles/RedSwig";
 import { TextInput } from "./utility_components";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useEffect } from "react";
-import { auth, signInWithEmailAndPassword } from "../Firebase/Firebase";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
-import {
-  signIn,
-  signInWithGoogle,
-  signUp,
-} from "../Firebase/firebaseFuncs";
+import AutoCompleteLocation from "./MapSystem/AutoCompleteLocation";
+import { signIn, signInWithGoogle, signUp } from "../Firebase/firebaseFuncs";
+import { UserContext } from "../contexts/UserProvider";
 
 function AuthView() {
   const navigate = useNavigate();
@@ -27,6 +22,7 @@ function AuthView() {
 
   const [error, setError] = useState("");
   const [auth, setAuth] = useState("");
+  const [user] = useContext(UserContext);
 
   const [isLogin, setIsLogin] = useState(true);
 
@@ -37,7 +33,18 @@ function AuthView() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  
+  const handleLocation = (val, idx) => {
+    setLocation(val)
+  }
+
+  useEffect(() => {
+    if (user) {
+      navigate(user?.signInFirstTime ? "/add-preferences" : "/");
+    }
+  }, [user]);
+
+  console.log(location)
+
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
       <div
@@ -54,7 +61,7 @@ function AuthView() {
               className={`flex items-center gap-5 bg-white rounded-md px-6 py-4 shw ${
                 !isLogin && "hidden"
               }`}
-              onClick={() => signInWithGoogle(navigate, setError)}
+              onClick={() => signInWithGoogle()}
               style={{ cursor: "pointer" }}
             >
               <div className="bg-white shw rounded-full flex items-center p-2">
@@ -119,11 +126,13 @@ function AuthView() {
             onChange={(event) => setPassword(event.target.value)}
           />
           {!isLogin && (
-            <TextInput
-              type="Location"
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-            />
+            // <TextInput
+            //   type="Location"
+            //   value={location}
+            //   onChange={(event) => setLocation(event.target.value)}
+            // />
+
+            <AutoCompleteLocation value={location.name} onChange={handleLocation} />
           )}
           <div className="w-full flex justify-end">
             <Link>
@@ -178,53 +187,52 @@ function AuthView() {
         className={`bg-green rounded-full px-5 py-2 absolute`}
         onClick={
           isLogin
-            ? () => signIn({ email, password, setAnimate, error, setError, navigate })
-            : () => signUp({
-                email,
-                password,
-                firstName,
-                lastName,
-                location,
-                error,
-                setError,
-                navigate
-              })
+            ? () =>
+                signIn({
+                  email,
+                  password,
+                  error,
+                  setError,
+                })
+            : () =>
+                signUp({
+                  email,
+                  password,
+                  firstName,
+                  lastName,
+                  location,
+                  error,
+                  setError,
+                })
         }
         style={{
           zIndex: 25,
-          bottom: `${isLogin ? "21vh" : "20.5vh"}`,
+          bottom: `${isLogin ? "22.5vh" : "21.5vh"}`,
           right: "5.5rem",
         }}
       >
         <ArrowRight />
       </div>
 
-      <div
-        className={`absolute -top-20 ${animate && "move-out-top"}`}
-        style={{ zIndex: 20 }}
-      >
+      <div className={`absolute move-in-top -top-20`} style={{ zIndex: 20 }}>
         <BlueSwig />
       </div>
       <div
-        className={`absolute -top-10 -right-24 ${animate && "move-out-right"}`}
+        className={`absolute move-in-top -top-10 -right-24 `}
         style={{ zIndex: 1 }}
       >
         <DarkBlueSwig />
       </div>
 
       <div
-        className={`absolute -bottom-36 -right-56 ${
-          animate && "move-out-right"
-        }`}
+        className={`absolute move-in-bottom -bottom-36 -right-56 `}
         style={{ zIndex: 20 }}
       >
         <YellowSwig />
       </div>
 
       <div
-        className={`absolute -left-16 -bottom-16 ${
-          animate && "move-out-bottom"
-        }`}
+        className={`move-in-bottom absolute -left-16 -bottom-16 $`}
         style={{ zIndex: 1 }}
       >
         <RedSwig />

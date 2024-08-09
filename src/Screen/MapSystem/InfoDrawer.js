@@ -91,10 +91,14 @@ export default function InfoDrawer({
                   (stage === 1 && "bg-purple") ||
                   (stage >= 2 && "bg-utility-blue")
                 } h-16 w-16 absolute right-5 -top-7 shadow-xl flex items-center justify-center`}
-                onClick={
-                  (icon_active && stage < 3 && onClickButton) ||
-                  (stage === 3 && exitButton)
-                }
+                onClick={() => {
+                  if (icon_active && stage < 3) {
+                    onClickButton?.(); // Ensure this is a function if provided
+                  } else if (stage === 3) {
+                    exitButton?.(); // Ensure this is a function if provided
+                  }
+                }}
+                
               >
                 {(stage === 1 && <RouteIcon />) ||
                   (stage === 2 && <GoIcon />) ||

@@ -6,7 +6,7 @@ import { createContext, useState, useEffect } from "react";
 export const UserContext = createContext([]);
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState("");
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {

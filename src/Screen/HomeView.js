@@ -1,7 +1,7 @@
 import Map from "./MapSystem/Map.js";
 import PurpleSwig from "../assets/images/location-swiggles/PurpleSwig.js";
 import MidwayNav from "./MapSystem/MidwayNav.js";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import InfoDrawer from "./MapSystem/InfoDrawer.js";
 import { AddressInput } from "./utility_components.js";
 import "./screenstyles.css";
@@ -12,6 +12,8 @@ import CopyIcon from "../assets/icons/CopyIcon.js";
 import { Modal } from "./utility_components.js";
 import AccountIcon from "../assets/icons/AccountIcon.js";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserProvider.js";
+
 
 export default function HomeView() {
   const nav = useNavigate()
@@ -20,13 +22,15 @@ export default function HomeView() {
     { step: "Midway!", stepCompleted: false },
   ]);
 
+  const [user] = useContext(UserContext)
+
   const [stage, setStage] = useState(1);
 
   const [showSteps, setShowSteps] = useState(false);
 
   const [numFriends, setNumFriends] = useState(2);
 
-  const [inputValue, setInputValue] = useState("");
+  const [addresses, setAddresses] = useState(Array(numFriends + 1).fill(""));
 
   const [showYellowSwig, setShowYellowSwig] = useState(false);
 
@@ -38,6 +42,7 @@ export default function HomeView() {
         { ...prevSteps[0], stepCompleted: false },
         { ...prevSteps[1], stepCompleted: false },
       ]);
+      setAddresses(Array(numFriends + 1).fill(""))
     } else if (stage === 2) {
       setTimeout(() => {
         setSteps((prevSteps) => [
@@ -56,11 +61,33 @@ export default function HomeView() {
         { ...prevSteps[1], stepCompleted: true },
       ]);
     }
-  }, [inputValue, stage]);
-  const handleChange = (e) => {
-    setInputValue(e.target.value);
+
+  }, [stage, numFriends]);
+
+  // Assuming user location is available in the user context
+useEffect(() => {
+  if (user.location || stage === 1) {
+    setAddresses((prevAddresses) => {
+      const updatedAddresses = [...prevAddresses];
+      updatedAddresses[0] = user.location; // Set user's location as the first item
+      return updatedAddresses;
+    });
+  }
+}, [user.location, stage]);
+
+
+  const handleChange = (val, index) => {
+    setAddresses((prevAddresses) => {
+      const newAddresses = [...prevAddresses];
+      newAddresses[index] = val;
+      return newAddresses;
+    });
+  
+    console.log(addresses);
   };
 
+  console.log(addresses)
+  
   const pinColors = ["#F61818", "#FDBF49", "#004AAD", "#00C520"];
 
   //format like [{step: "blah", stepCompleted: boolean}]
@@ -83,6 +110,9 @@ export default function HomeView() {
       ]);
     }
   };
+
+  console.log(addresses)
+
 
   const ModalButton = ({ type, text, onButton }) => {
     return (
@@ -136,14 +166,16 @@ export default function HomeView() {
         style={{ zIndex: 20 }}
       >
         <div className="overflow-y-auto w-full h-[9.5rem] relative">
-          <AddressInput type={"self"} onChange={handleChange} manageButton={() => setIsModalOpen(true)} />
+          <AddressInput type={"self"} idx={0}  disableRemove={stage > 1} onChange={handleChange} manageButton={() => setIsModalOpen(true)} value={!!addresses && (addresses[0]?.name || addresses[0])} />
           {[...Array(numFriends)].map((_, index) => (
             <AddressInput
               color={pinColors[index]}
-              key={index}
+              key={`${index}-friend`}
               removeAddress={removeAddress}
               onChange={handleChange}
               disableRemove={stage > 1}
+              idx={index + 1}
+              value={!!addresses && (addresses[index + 1]?.name || addresses[index + 1])}
             />
           ))}
         </div>
@@ -169,14 +201,14 @@ export default function HomeView() {
         )}
       </div>
 
-      <Map containerStyle={{ width: "100vw", height: "80vh", zIndex: 20 }} />
+      <Map stage={stage} containerStyle={{ width: "100vw", height: "80vh", zIndex: 20 }} friendsAddresses={addresses} itinerary={{lat: 51.0499129, lng: -114.0630231 }} />
 
       <div className="relative h-20">
         <InfoDrawer
           stage={stage}
           onClickButton={() => setStage(stage + 1)}
           exitButton={() => setStage(1)}
-          icon_active={inputValue}
+          icon_active={!!addresses[1]}
         />
       </div>
       <div className="relative items-center">
